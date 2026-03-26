@@ -1,0 +1,307 @@
+{
+  "name": "Whale Tracker v4.2 — Multi-Chain Final",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "minutes",
+              "minutesInterval": 15
+            }
+          ]
+        }
+      },
+      "id": "dd1eb060-9668-449f-b935-caa4b6d88259",
+      "name": "Every 15 Minutes",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -752,
+        -144
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const wallets = [\n  // ETHEREUM\n  { address: '0x28C6c06298d514Db089934071355E5743bf21d60', chain: 'eth', label: 'Binance Hot Wallet 1'  },\n  { address: '0xBE0eB53F46cd790Cd13851d5EFf43D12404d33E8', chain: 'eth', label: 'Binance Cold Wallet'    },\n  { address: '0xF977814e90dA44bFA03b6295A0616a897441aceC', chain: 'eth', label: 'Binance Whale 8'        },\n  { address: '0x47ac0Fb4F2D84898e4D9E7b4DaB3C24507a6D503', chain: 'eth', label: 'Binance Large Whale'    },\n  { address: '0xDA9dfA130Df4dE4673b89022EE50ff26f6EA73Cf', chain: 'eth', label: 'Kraken Hot Wallet'      },\n  { address: '0x53d284357ec70cE289D6D64134DfAc8E511c8a3D', chain: 'eth', label: 'Kraken Cold Wallet'     },\n  { address: '0x0a869d79a7052C7f1b55a8EbabbEa3420F0D1E13', chain: 'eth', label: 'OKX Hot Wallet'         },\n  { address: '0x6cC5F688a315f3dC28A7781717a9A798a59fDA7b', chain: 'eth', label: 'OKX Whale'              },\n  { address: '0x40B38765696e3d5d8d9d834D8AaD4bB6e418DC77', chain: 'eth', label: 'Robinhood Wallet'       },\n  { address: '0x8EB8a3b98659Cce290402893d0123abb75E3ab28', chain: 'eth', label: 'Avalanche Bridge ETH'   },\n  // BNB CHAIN\n  { address: '0x5a52E96BAcdaBb82fd05763E25335261B270Efcb', chain: 'bsc', label: 'BNB Whale 1'            },\n  { address: '0x8894E0a0c962CB723c1976a4421c95949bE2D4E3', chain: 'bsc', label: 'BNB Chain Whale 2'      },\n  { address: '0xF977814e90dA44bFA03b6295A0616a897441aceC', chain: 'bsc', label: 'Binance BSC Wallet'     },\n  { address: '0x28C6c06298d514Db089934071355E5743bf21d60', chain: 'bsc', label: 'Binance BSC Hot Wallet' },\n  // POLYGON\n  { address: '0xBA12222222228d8Ba445958a75a0704d566BF2C8', chain: 'polygon', label: 'Balancer Vault Polygon'  },\n  { address: '0xcd6Bc2CD1C6E27E1e4e65BeD5AA2D55FBfa78524', chain: 'polygon', label: 'Polygon Whale 1'          },\n  { address: '0x28C6c06298d514Db089934071355E5743bf21d60', chain: 'polygon', label: 'Binance Polygon Wallet'   },\n  // ARBITRUM\n  { address: '0xBA12222222228d8Ba445958a75a0704d566BF2C8', chain: 'arbitrum', label: 'Balancer Vault Arbitrum' },\n  { address: '0xf89d7b9c864f589bbF53a82105107622B35EaA40', chain: 'arbitrum', label: 'Bybit Arbitrum Wallet'   }\n];\nreturn wallets.map(w => ({ json: w }));"
+      },
+      "id": "931bac64-3ada-4754-b7b4-478563480d0e",
+      "name": "Whale Wallet List",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -528,
+        -144
+      ]
+    },
+    {
+      "parameters": {
+        "url": "=https://deep-index.moralis.io/api/v2.2/{{ $json.address }}/erc20/transfers",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "chain",
+              "value": "={{ $json.chain }}"
+            },
+            {
+              "name": "limit",
+              "value": "10"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-API-Key",
+              "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJub25jZSI6IjRkNmM0MDU0LWMyNGEtNDY4MC1iYTQ4LTZkNTU1NjU5Y2RjOSIsIm9yZ0lkIjoiNTA0MDc1IiwidXNlcklkIjoiNTE4Njc0IiwidHlwZUlkIjoiNDZiZTlhMjgtNGZlNS00MTZhLWI0ZDMtOTA3YTViNjI3ZWEzIiwidHlwZSI6IlBST0pFQ1QiLCJpYXQiOjE3NzI3MTM4ODgsImV4cCI6NDkyODQ3Mzg4OH0.Y_ExtsEoE4rmEvU5JRQXsIeK4KMgNppbquIis7n3nI4"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "0b8a3fd4-8778-49bb-803d-3bb5f540e4fc",
+      "name": "Get Token Transfers",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        -304,
+        -144
+      ]
+    },
+    {
+      "parameters": {
+        "url": "=https://deep-index.moralis.io/api/v2.2/{{ $('Whale Wallet List').item.json.address }}/balance",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "chain",
+              "value": "={{ $('Whale Wallet List').item.json.chain }}"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-API-Key",
+              "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJub25jZSI6IjRkNmM0MDU0LWMyNGEtNDY4MC1iYTQ4LTZkNTU1NjU5Y2RjOSIsIm9yZ0lkIjoiNTA0MDc1IiwidXNlcklkIjoiNTE4Njc0IiwidHlwZUlkIjoiNDZiZTlhMjgtNGZlNS00MTZhLWI0ZDMtOTA3YTViNjI3ZWEzIiwidHlwZSI6IlBST0pFQ1QiLCJpYXQiOjE3NzI3MTM4ODgsImV4cCI6NDkyODQ3Mzg4OH0.Y_ExtsEoE4rmEvU5JRQXsIeK4KMgNppbquIis7n3nI4"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "8d2e96ab-6e57-4593-8086-82cf200a0281",
+      "name": "Get Native Balance",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        -80,
+        -144
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "const walletInfo  = $('Whale Wallet List').item.json;\nconst transfers   = $('Get Token Transfers').item.json;\nconst balanceData = $input.item.json;\n\nconst CHAIN_META = {\n  eth:      { icon: '⟠', name: 'Ethereum',  nativeSymbol: 'ETH',   decimals: 18, price: 3500 },\n  bsc:      { icon: '◈', name: 'BNB Chain', nativeSymbol: 'BNB',   decimals: 18, price: 600  },\n  polygon:  { icon: '⬡', name: 'Polygon',   nativeSymbol: 'MATIC', decimals: 18, price: 0.9  },\n  arbitrum: { icon: '🔵', name: 'Arbitrum',  nativeSymbol: 'ETH',   decimals: 18, price: 3500 },\n};\n\nconst STABLECOINS = ['usdt','usdc','busd','dai','tusd','usdp','frax'];\nconst chain   = CHAIN_META[walletInfo.chain] || { icon: '🔗', name: walletInfo.chain, nativeSymbol: '?', decimals: 18, price: 1 };\nconst txList  = (transfers.result || []);\nconst short   = walletInfo.address.slice(0,6) + '...' + walletInfo.address.slice(-4);\nconst nativeBal = parseFloat(balanceData.balance || '0') / Math.pow(10, chain.decimals);\n\nconst qualifyingTxs = txList.filter(tx => {\n  const dec      = parseInt(tx.token_decimals || 18);\n  const amount   = parseFloat(tx.value || '0') / Math.pow(10, dec);\n  const sym      = (tx.token_symbol || '').toLowerCase();\n  const isStable = STABLECOINS.includes(sym);\n  const usdEst   = isStable ? amount : amount * chain.price;\n  return usdEst >= 500000;\n});\n\nif (qualifyingTxs.length === 0) return { json: { skip: true, message: null } };\n\nconst tx       = qualifyingTxs[0];\nconst dec      = parseInt(tx.token_decimals || 18);\nconst amount   = parseFloat(tx.value || '0') / Math.pow(10, dec);\nconst sym      = (tx.token_symbol || chain.nativeSymbol).toUpperCase();\nconst isStable = STABLECOINS.includes((tx.token_symbol || '').toLowerCase());\nconst usdEst   = isStable ? amount : amount * chain.price;\n\nlet tierLabel, tierEmoji;\nif      (usdEst >= 5000000) { tierLabel = 'MEGA WHALE 🦣'; tierEmoji = '🚨'; }\nelse if (usdEst >= 1000000) { tierLabel = 'LARGE WHALE 🐋'; tierEmoji = '⚠️'; }\nelse                         { tierLabel = 'WHALE 🐳';       tierEmoji = '📡'; }\n\nconst walletLC    = walletInfo.address.toLowerCase();\nconst isReceiving = (tx.to_address   || '').toLowerCase() === walletLC;\nconst isSending   = (tx.from_address || '').toLowerCase() === walletLC;\n\nlet signal, moodEmoji;\nif      (isReceiving) { signal = '📈 Receiving — Bullish accumulation'; moodEmoji = '🟢'; }\nelse if (isSending)   { signal = '📉 Sending — Potential distribution';  moodEmoji = '🔴'; }\nelse                  { signal = '⚪ Neutral movement';                   moodEmoji = '⚪'; }\n\nconst fmtUsd  = n => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(n);\nconst fmtAmt  = new Intl.NumberFormat('en-US', { maximumFractionDigits: 2 }).format(amount);\nconst timeStr = new Date(tx.block_timestamp || Date.now()).toUTCString().replace(' GMT', ' UTC');\nconst divider = '───────────────────────';\n\nconst message =\n  tierEmoji + ' ' + chain.icon + ' <b>' + chain.name + ' ' + tierLabel + '</b> ' + moodEmoji + '\\n' +\n  divider + '\\n' +\n  '💰 <b>' + fmtAmt + ' ' + sym + '</b>\\n' +\n  '💵 Est. Value: <b>' + fmtUsd(usdEst) + '</b>\\n' +\n  '👛 Wallet: <code>' + short + '</code>\\n' +\n  '🏷 Label: <i>' + walletInfo.label + '</i>\\n' +\n  '📤 From: <code>' + (tx.from_address||'').slice(0,10) + '...</code>\\n' +\n  '📥 To:   <code>' + (tx.to_address||'').slice(0,10) + '...</code>\\n' +\n  divider + '\\n' +\n  '📊 ' + signal + '\\n' +\n  '💼 Balance: <b>' + nativeBal.toFixed(2) + ' ' + chain.nativeSymbol + '</b>\\n' +\n  divider + '\\n' +\n  '⏰ <i>' + timeStr + '</i>';\n\nreturn { json: { message, signal, skip: false, tier: tierLabel, chain: walletInfo.chain, symbol: sym, usdEst, wallet: short } };"
+      },
+      "id": "8c3e8e05-8a33-4c17-bca4-84ba6ee4a9aa",
+      "name": "Classify + Build Message",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        144,
+        -144
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": false,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "cond-skip",
+              "leftValue": "={{ $json.skip }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "notEqual"
+              }
+            },
+            {
+              "id": "cond-msg",
+              "leftValue": "={{ $json.message }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "ee44524b-7179-4bfe-9c0e-47875db69e17",
+      "name": "Has Valid Alert?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        368,
+        -144
+      ]
+    },
+    {
+      "parameters": {
+        "chatId": "1792219463",
+        "text": "={{ $json.message }}",
+        "additionalFields": {
+          "disable_web_page_preview": true,
+          "parse_mode": "HTML"
+        }
+      },
+      "id": "de4a15b8-3949-4f32-a08b-326ecb5862fd",
+      "name": "Send Telegram Alert",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.1,
+      "position": [
+        592,
+        -240
+      ],
+      "webhookId": "3c768cf9-55d8-4d01-859b-b171c5685a27",
+      "credentials": {
+        "telegramApi": {
+          "id": "BaMIhxHa8ZTuBqbh",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "return [];"
+      },
+      "id": "8c4a3579-6e15-42ce-9d40-84293988e3da",
+      "name": "No Alert — Discard",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        592,
+        -48
+      ]
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Every 15 Minutes": {
+      "main": [
+        [
+          {
+            "node": "Whale Wallet List",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Whale Wallet List": {
+      "main": [
+        [
+          {
+            "node": "Get Token Transfers",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Token Transfers": {
+      "main": [
+        [
+          {
+            "node": "Get Native Balance",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Native Balance": {
+      "main": [
+        [
+          {
+            "node": "Classify + Build Message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Classify + Build Message": {
+      "main": [
+        [
+          {
+            "node": "Has Valid Alert?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Has Valid Alert?": {
+      "main": [
+        [
+          {
+            "node": "Send Telegram Alert",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "No Alert — Discard",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "da0bd439-34a8-480a-b06c-52c2b941f2b9",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "5bf5f63beeb31621c2e06be4b139a744c9521f9761cf329a1f568302c6e44b5e"
+  },
+  "id": "8cI8bNaqUSNzty15",
+  "tags": [
+    {
+      "updatedAt": "2026-03-01T12:50:55.446Z",
+      "createdAt": "2026-03-01T12:50:55.446Z",
+      "id": "0a24AHKgRmnBVTAP",
+      "name": "free-tier"
+    },
+    {
+      "updatedAt": "2026-03-05T12:20:33.478Z",
+      "createdAt": "2026-03-05T12:20:33.478Z",
+      "id": "QfJtkVLz5QBcOjOy",
+      "name": "whale-tracker"
+    },
+    {
+      "updatedAt": "2026-03-05T13:17:10.748Z",
+      "createdAt": "2026-03-05T13:17:10.748Z",
+      "id": "kC6f3CMKPhD2dsRL",
+      "name": "v4.2"
+    }
+  ]
+}
